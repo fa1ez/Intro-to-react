@@ -114,8 +114,3 @@ return (
 );
 ```
 
-child component
-```
-
-```
-
