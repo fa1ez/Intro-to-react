@@ -1,13 +1,11 @@
 # Intro-to-react
 
 
-Initialization
-```
-npx create-react-app projectname
-#if node module is not present
-npm install
-npm run start
-```
+# Good to know
+
+1. ***htmlFor*** differs from ***for*** because of reserved keywords in javascript (for loop). Same is the case with ***class*** and ***className***.
+2. htmlFor is used to make UI more interactive (Clicking on label will autofocus the input)
+
 # Components
 
 >**Note : Use PascalCase in naming a component in react**
@@ -23,6 +21,28 @@ const HelloWorld = () => {
 }
  
 export default HelloWorld;
+```
+
+# Controlled vs unControlled Components
+
+>**Note : File input are read only so they cannot be set programmatically**
+
+Form elements (input,textarea etc) differ from other DOM elements in the aspect that they have their own inner state. React also has its own state management system. If you bind the states with the inputs its called controlled component.
+```
+const [name,setName] = useState("faiez")
+<input
+    value={name}
+    onChange=((e) => setName(e.target.value))
+/>
+```
+If we use the internal states of the form elements ,its called uncontrolled components because react is not controlling them. In this case, we usually use useRef to get the value.
+```
+const nameRef = useRef()
+//nameRef.current.value = current value
+<input
+    ref=nameRef
+/>
+
 ```
 
 # Events
