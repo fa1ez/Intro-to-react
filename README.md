@@ -134,3 +134,117 @@ return (
 );
 ```
 
+# React Redux
+Tutorial -> https://www.youtube.com/watch?v=5yEG6GhoJBs&t=1016s 
+### Getting started
+
+Component dispatches action
+
+Actions are sent to store
+
+Reducers process actions & update store
+
+Store is propagated back to componets
+
+
+
+Actions -> is a plain JS object, dispatched to reducers to update state (describe state changes)
+Reducers -> Pure functions that update the state
+
+```
+Pure function: same input produces same output and no side effects
+
+func add(a,b){
+return a+b
+}
+```
+
+Middleware intercept actions before they reach reducers enabling asunc logic etc.
+
+# Setup (with persists)
+
+main.js
+```
+<Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+       <App />
+    </PersistGate>
+</Provider>
+```
+
+create a store folder with following architecture
+
+![image](https://github.com/user-attachments/assets/f89bb639-cd8a-4c5f-965a-8af80e536399)
+
+store.js
+```
+
+const persistConfig = {
+  key: "root",
+  storage,
+};
+
+const combinedPersistedReducer = combineReducers({
+  userReducer: userSlice.reducer,
+});
+
+const persistedReducer = persistReducer(
+  persistConfig,
+  combinedPersistedReducer
+);
+
+const rootReducer = combineReducers({
+  persistedRoot: persistedReducer,
+  //apis to not persist
+  [authApi.reducerPath]: authApi.reducer,
+});
+
+export const store = configureStore({
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(
+      // getDefaultMiddleware({
+      //   serializableCheck: {
+      //     ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      //   },
+      // }).concat(
+      authMiddleware,
+      authApi.middleware
+    ),
+});
+
+export const persistor = persistStore(store);
+
+```
+
+userslice.jsx
+```
+// redux/userSlice.js
+import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = {
+  user:  null,
+};
+
+const userSlice = createSlice({
+  name: "user",
+  initialState,
+  reducers: {
+    setUser: (state, action) => {
+      state.user = { ...action.payload };
+    },
+    logout: (state) => {
+      state.user = null;
+    },
+  },
+});
+
+export const selectUser = (state) => state.persistedRoot.userReducer.user;
+
+export const { setUser, logout } = userSlice.actions;
+
+export default userSlice;
+```
+
+store should be setup with these minilmalist settings for user authentication
+
